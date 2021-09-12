@@ -8,6 +8,8 @@ import com.concesionario.cochesbackend.model.Modelo_;
 import com.concesionario.cochesbackend.repository.CocheRepository;
 import io.github.jhipster.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +24,10 @@ public class CocheService extends QueryService<Coche> {
     @Autowired
     CocheRepository cocheRepository;
 
-    public List<Coche> findByCriteria(CocheCriteria cocheCriteria){
+    public List<Coche> findByCriteria(CocheCriteria cocheCriteria, Pageable pageable){
         final Specification<Coche> specification = createSpecification(cocheCriteria);
-        List<Coche> coches = cocheRepository.findAll(specification);
+        Page<Coche> cochePage = cocheRepository.findAll(specification, pageable);
+        List<Coche> coches = cochePage.getContent();
         return coches;
     }
 
