@@ -24,10 +24,9 @@ public class CocheService extends QueryService<Coche> {
     @Autowired
     CocheRepository cocheRepository;
 
-    public List<Coche> findByCriteria(CocheCriteria cocheCriteria, Pageable pageable){
+    public Page<Coche> findByCriteria(CocheCriteria cocheCriteria, Pageable pageable){
         final Specification<Coche> specification = createSpecification(cocheCriteria);
-        Page<Coche> cochePage = cocheRepository.findAll(specification, pageable);
-        List<Coche> coches = cochePage.getContent();
+        Page<Coche> coches = cocheRepository.findAll(specification, pageable);
         return coches;
     }
 

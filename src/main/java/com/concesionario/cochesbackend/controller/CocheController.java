@@ -10,6 +10,7 @@ import io.github.jhipster.service.filter.IntegerFilter;
 import io.github.jhipster.service.filter.StringFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -28,23 +29,26 @@ public class CocheController {
     CocheService cocheService;
 
     @PostMapping("/list")
-    public ResponseEntity<List<Coche>> list(
+    public ResponseEntity<Page<Coche>> list(
             @RequestBody BusquedaDTO busquedaDTO,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "19") int size,
-            @RequestParam(defaultValue = "modelo.marca.nombre") String order,
+            @RequestParam(defaultValue = "id") String order,
             // @RequestParam(defaultValue = "modelo.nombre") String order,
             // @RequestParam(defaultValue = "km") String order,
             @RequestParam(defaultValue = "true") boolean asc
     ){
+        if(order.equals("marca"))
+            order = "modelo.marca.nombre";
+        else if(order.equals("modelo"))
+            order = "modelo.nombre";
         CocheCriteria cocheCriteria = createCriteria(busquedaDTO);
-        List<Coche> list = new ArrayList<>();
         if(!asc) {
-             list = cocheService.findByCriteria(cocheCriteria, PageRequest.of(page, size, Sort.by(order).descending()));
-            return new ResponseEntity<List<Coche>>(list, HttpStatus.OK);
+            Page<Coche> coches = cocheService.findByCriteria(cocheCriteria, PageRequest.of(page, size, Sort.by(order).descending()));
+            return new ResponseEntity<Page<Coche>>(coches, HttpStatus.OK);
         }
-        list = cocheService.findByCriteria(cocheCriteria,  PageRequest.of(page, size, Sort.by(order)));
-        return new ResponseEntity<List<Coche>>(list, HttpStatus.OK);
+        Page<Coche> coches = cocheService.findByCriteria(cocheCriteria,  PageRequest.of(page, size, Sort.by(order)));
+        return new ResponseEntity<Page<Coche>>(coches, HttpStatus.OK);
     }
 
     private CocheCriteria createCriteria(BusquedaDTO dto){
